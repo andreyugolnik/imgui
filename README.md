@@ -1,3 +1,44 @@
+> File System abstraction added, and nothing more.
+
+> It is useful for some devices where is no "fopen" support available. For example, this implementation can store its config on the tvOS platform.
+
+Just implement your own Input / Output streams like that:
+```
+class MyInputStream final : public ImInputStream
+{
+public:
+    unsigned size() const override;
+    unsigned read(void* buffer, unsigned count) override;
+};
+
+class MyOutputStream final : public ImOutputStream
+{
+public:
+    unsigned write(const void* buffer, unsigned count) override;
+    unsigned format(const char* fmt, ...) override;
+};
+```
+
+And your own FileSystem:
+```
+class MyFileSystem final : public ImFile
+{
+public:
+    ImInputStream* open(const char* path, const char* mode) const override;
+    ImOutputStream* create(const char* path, const char* mode) const override;
+};
+```
+
+And finally setup ImGui:
+```
+MyFileSystem myFileSystem;
+auto& io = ImGui::GetIO();
+io.FileSystem = &myFileSystem;
+```
+
+That's all. Now ImGui ready to works on your custom platform with your custom filesystem.
+***
+
 dear imgui,
 =====
 [![Build Status](https://travis-ci.org/ocornut/imgui.svg?branch=master)](https://travis-ci.org/ocornut/imgui)
